@@ -21,21 +21,66 @@ enum SecurityLightEvent {
 	SecurityLightEventModectOff
 };
 
-typedef void (* SecurityLightStateChangeCallback)(uint8_t pin, bool light_on);
+typedef void (* SecurityLightStateChangeCallback)(uint8_t pin, bool lightOn);
 
 class SecurityLight {
 	private:
+		/**
+		 * The GPIO pin to which the SecurityLight is attached.
+		 */
 		uint8_t pin;
-		SecurityLightStateChangeCallback state_change_callback;
 
+		/**
+		 * Callback that is used to report changes in the light state.
+		 */
+		SecurityLightStateChangeCallback stateChangeCallback;
+
+		/**
+		 * The current state of the SecurityLight.
+		 */
 		SecurityLightState state;
 
+		/**
+		 * The internal state machine that controls the SecurityLight.
+		 */
+		void stateMachine(SecurityLightEvent event);
+
 	public:
-		SecurityLight(uint8_t pin, SecurityLightStateChangeCallback state_change_callback);
+		/**
+		 * Creates a new SecurityLight object.
+		 */
+		SecurityLight(uint8_t pin, SecurityLightStateChangeCallback stateChangeCallback);
 
-		void state_machine(SecurityLightEvent event);
+		/**
+		 * Enable motion-detection mode.
+		 */
+		void enableModect();
 
-		uint8_t get_pin();
+		/**
+		 * Disables motion-detection mode.
+		 */
+		void disableModect();
+
+		/**
+		 * Inform the SecurityLight that motion is (true) or is not (false) detected.
+		 */
+		void setModect(bool modect);
+
+		/**
+		 * Turn the SecurityLight on (true) or off (false).
+		 */
+		void setManual(bool manual);
+
+		/**
+		 * Get the pin to which the SecurityLight is attached.
+		 */
+		uint8_t getPin();
+
+		/**
+		 * Trigger an immediate invocation of the SecurityLight callback with
+		 * the current state of the light.
+		 */
+		void reportStatus();
 };
 
 #endif /* SECURITY_LIGHT_H */

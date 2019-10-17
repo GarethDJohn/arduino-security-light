@@ -1,15 +1,14 @@
 #include "SecurityLight.h"
 
-SecurityLight::SecurityLight(uint8_t pin, SecurityLightStateChangeCallback state_change_callback) {
+SecurityLight::SecurityLight(uint8_t pin, SecurityLightStateChangeCallback stateChangeCallback) {
 	this->pin = pin;
-	this->state_change_callback = state_change_callback;
-
+	this->stateChangeCallback = stateChangeCallback;
 	this->state = SecurityLightStateManualOff;
 
 	pinMode(this->pin, OUTPUT);
 }
 
-void SecurityLight::state_machine(SecurityLightEvent event) {
+void SecurityLight::stateMachine(SecurityLightEvent event) {
 	switch (this->state) {
 		case SecurityLightStateManualOff:
 			switch (event) {
@@ -21,7 +20,7 @@ void SecurityLight::state_machine(SecurityLightEvent event) {
 				case SecurityLightEventManualOn:
 					digitalWrite(this->pin, HIGH);
 					this->state = SecurityLightStateManualOn;
-					this->state_change_callback(this->pin, true);
+					this->stateChangeCallback(this->pin, true);
 					break;
 				case SecurityLightEventManualOff:
 					break;
@@ -43,7 +42,7 @@ void SecurityLight::state_machine(SecurityLightEvent event) {
 				case SecurityLightEventManualOff:
 					digitalWrite(this->pin, LOW);
 					this->state = SecurityLightStateManualOff;
-					this->state_change_callback(this->pin, false);
+					this->stateChangeCallback(this->pin, false);
 					break;
 				case SecurityLightEventModectOn:
 					break;
@@ -61,14 +60,14 @@ void SecurityLight::state_machine(SecurityLightEvent event) {
 				case SecurityLightEventManualOn:
 					digitalWrite(this->pin, HIGH);
 					this->state = SecurityLightStateModectMotionOffManualOn;
-					this->state_change_callback(this->pin, true);
+					this->stateChangeCallback(this->pin, true);
 					break;
 				case SecurityLightEventManualOff:
 					break;
 				case SecurityLightEventModectOn:
 					digitalWrite(this->pin, HIGH);
 					this->state = SecurityLightStateModectMotionOnManualOff;
-					this->state_change_callback(this->pin, true);
+					this->stateChangeCallback(this->pin, true);
 					break;
 				case SecurityLightEventModectOff:
 					break;
@@ -86,7 +85,7 @@ void SecurityLight::state_machine(SecurityLightEvent event) {
 				case SecurityLightEventManualOff:
 					digitalWrite(this->pin, LOW);
 					this->state = SecurityLightStateModectMotionOffManualOff;
-					this->state_change_callback(this->pin, false);
+					this->stateChangeCallback(this->pin, false);
 					break;
 				case SecurityLightEventModectOn:
 					this->state = SecurityLightStateModectMotionOnManualOn;
@@ -107,14 +106,14 @@ void SecurityLight::state_machine(SecurityLightEvent event) {
 				case SecurityLightEventManualOff:
 					digitalWrite(this->pin, LOW);
 					this->state = SecurityLightStateModectMotionOffManualOff;
-					this->state_change_callback(this->pin, false);
+					this->stateChangeCallback(this->pin, false);
 					break;
 				case SecurityLightEventModectOn:
 					break;
 				case SecurityLightEventModectOff:
 					digitalWrite(this->pin, LOW);
 					this->state = SecurityLightStateModectMotionOffManualOff;
-					this->state_change_callback(this->pin, false);
+					this->stateChangeCallback(this->pin, false);
 					break;
 			}
 			break;
@@ -129,7 +128,6 @@ void SecurityLight::state_machine(SecurityLightEvent event) {
 					break;
 				case SecurityLightEventManualOff:
 					this->state = SecurityLightStateModectMotionOnManualOff;
-					break;
 				case SecurityLightEventModectOn:
 					break;
 				case SecurityLightEventModectOff:
@@ -140,6 +138,40 @@ void SecurityLight::state_machine(SecurityLightEvent event) {
 	}
 }
 
-uint8_t SecurityLight::get_pin() {
+void SecurityLight::enableModect() {
+	this->stateMachine(SecurityLightEventEnableModect);
+}
+
+void SecurityLight::disableModect() {
+	this->stateMachine(SecurityLightEventDisableModect);
+}
+
+void SecurityLight::setModect(bool modect) {
+	if (modect) {
+		this->stateMachine(SecurityLightEventModectOn);
+	} else {
+		this->stateMachine(SecurityLightEventModectOff);
+	}
+}
+
+void SecurityLight::setManual(bool manual) {
+	if (manual) {
+		this->stateMachine(SecurityLightEventManualOn);
+	} else {
+		this->stateMachine(SecurityLightEventManualOff);
+	}
+}
+
+uint8_t SecurityLight::getPin() {
 	return this->pin;
+}
+
+void SecurityLight::reportStatus() {
+	if (this->state == SecurityLightStateManualOn ||
+	    this->state == SecurityLightStateModectMotionOffManualOn ||
+		this->state == SecurityLightStateModectMotionOnManualOn) {
+		this->stateChangeCallback(this->pin, true);
+	} else {
+		this->stateChangeCallback(this->pin, false);
+	}
 }
