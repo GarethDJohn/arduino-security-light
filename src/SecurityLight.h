@@ -62,14 +62,24 @@ class SecurityLight {
 		void disableModect();
 
 		/**
-		 * Inform the SecurityLight that motion is (true) or is not (false) detected.
+		 * Turn the security light on with reason 'motion detected'.
 		 */
-		void setModect(bool modect);
+		void setModectOn();
 
 		/**
-		 * Turn the SecurityLight on (true) or off (false).
+		 * Turn the security light off with reason 'no motion detected'.
 		 */
-		void setManual(bool manual);
+		void setModectOff();
+
+		/**
+		 * Turn the manual override of the security light on.
+		 */
+		void setManualOn();
+
+		/**
+		 * Turn the manual override of the security light off.
+		 */
+		void setManualOff();
 
 		/**
 		 * Get the pin to which the SecurityLight is attached.

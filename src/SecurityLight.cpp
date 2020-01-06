@@ -146,20 +146,20 @@ void SecurityLight::disableModect() {
 	this->stateMachine(SecurityLightEventDisableModect);
 }
 
-void SecurityLight::setModect(bool modect) {
-	if (modect) {
-		this->stateMachine(SecurityLightEventModectOn);
-	} else {
-		this->stateMachine(SecurityLightEventModectOff);
-	}
+void SecurityLight::setModectOn() {
+	this->stateMachine(SecurityLightEventModectOn);
 }
 
-void SecurityLight::setManual(bool manual) {
-	if (manual) {
-		this->stateMachine(SecurityLightEventManualOn);
-	} else {
-		this->stateMachine(SecurityLightEventManualOff);
-	}
+void SecurityLight::setModectOff() {
+	this->stateMachine(SecurityLightEventModectOff);
+}
+
+void SecurityLight::setManualOn() {
+	this->stateMachine(SecurityLightEventManualOn);
+}
+
+void SecurityLight::setManualOff() {
+	this->stateMachine(SecurityLightEventManualOff);
 }
 
 uint8_t SecurityLight::getPin() {
